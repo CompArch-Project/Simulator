@@ -9,29 +9,45 @@ public class Simulator {
         reg[0] = 0;
         memory[0] = 8454151;
         memory[1] = 9043971;
-        memory[2]=655361;
-        memory[3]=16842754;
-        memory[4]=16842749;
-        memory[5]=29360128;
-        memory[6]=25165824;
-        memory[7]=5;
-        memory[8]=-1;
-        memory[9]=2;
+        memory[2] = 655361;
+        memory[3] = 16842754;
+        memory[4] = 16842749;
+        memory[5] = 29360128;
+        memory[6] = 25165824;
+        memory[7] = 5;
+        memory[8] = -1;
+        memory[9] = 2;
     }
     
     
     public static void main(String[] args) {
         
         Simulator t2 = new Simulator();
-        int[] arrayB = BinaryConvert.ConvertBinary(t2.memory[0]);
+        int[] arrayB = BinaryConvert.ConvertToBinary(t2.memory[0]);
+
+        StringBuffer opcode = new StringBuffer();
+        for(int i = 24; i >= 22; i--){
+            opcode.append(arrayB[i]);
+        }
+
+        int checkOp = EvalOpcode.verify_Opcode(opcode.toString());
+
+        switch (checkOp) {
+            case 2:
+                System.out.println("This is I-Type");
+                break;
         
-        System.out.println("opcode : " + arrayB[24] + " " + arrayB[23] + " " + arrayB[22]);
-        System.out.println("rs : " + arrayB[21] + " " + arrayB[20] +  " " +arrayB[19]);
-        System.out.println("rt : " + arrayB[18] + " " +arrayB[17] + " " + arrayB[16]);
-        System.out.print("offset : ");
-        for (int i = 15; i >= 0; i--) {
-            System.out.print(arrayB[i]);
+            default:
+                break;
         }
     }
 }
 
+
+// System.out.println("opcode : " + arrayB[24] + " " + arrayB[23] + " " + arrayB[22]);
+// System.out.println("rs : " + arrayB[21] + " " + arrayB[20] +  " " +arrayB[19]);
+// System.out.println("rt : " + arrayB[18] + " " +arrayB[17] + " " + arrayB[16]);
+// System.out.print("offset : ");
+// for (int i = 15; i >= 0; i--) {
+//     System.out.print(arrayB[i]);
+// }
