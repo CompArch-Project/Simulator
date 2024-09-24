@@ -6,7 +6,7 @@ import java.io.IOException;
 public class Simulator {
     private static final int NUMMEMORY = 65536; // maximum number of words in memory
     private static final int NUMREGS = 8; // number of machine registers
-    private static final int MAXLINELENGTH = 20;
+    private static final int MAXLINELENGTH = 1000;
 
     static class stateStruct {
         int pc;
@@ -77,6 +77,12 @@ public class Simulator {
         int i = 1;
         while(i != -1){
             
+            try {
+                handleStateUpdate(state);
+            } catch (PCOutOfBoundsException e) {
+                e.printStackTrace();
+            }
+
             printState(state);
 
             int next_pc = state.pc + 1;
@@ -84,6 +90,7 @@ public class Simulator {
             int[] BinaryMachineCode = BinaryConvert.ConvertToBinary(state.mem[state.pc]);
             
             String opcode = ClassifiedType.getOp(BinaryMachineCode);
+            
 
             
             switch (opcode.toString()) {
@@ -149,19 +156,25 @@ public class Simulator {
                 
             }
             
-            total++;
+            if(i != -1){
+                total++;
+            }else{
+                total++;
+                System.out.println("machine halted");
+                System.out.println("total of " + total + " instructions executed");
+            }
             
             
             if(total > MAXLINELENGTH)
             {
                 i = -1;
-                System.out.println("MAX");
+                System.out.println("machine out of line");
+                System.out.println("total of " + total + " instructions executed");
             }
 
         }
         
-        System.out.println("machine halted");
-        System.out.println("total of " + total + " instructions executed");
+        
         System.out.println("final state of machine:");
         printState(state);
 
@@ -173,6 +186,13 @@ public class Simulator {
             num -= (1 << 16);
         }
         return num;
+    }
+
+    public static void handleStateUpdate(stateStruct state) {
+        if (state.pc < 0) {
+            System.out.println("error: out of address");
+            throw new PCOutOfBoundsException("Program counter is less than 0");
+        }
     }
     
 }
