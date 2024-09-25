@@ -32,41 +32,47 @@ public class Simulator {
     public static void main(String[] args) {
         stateStruct state = new stateStruct();
 
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter your file option: ");
+        String option = scanner.nextLine();
+        
+        String filename = "";
+        
+        if(option.equals("1"))
+        {
+            filename = "test.txt";
+        }else{
+            System.out.printf("error: usage: java Simulator <machine-code file>%n");
+            System.exit(1);
+        }
+
         // if (args.length != 1) {
         //     System.out.printf("error: usage: java Simulator <machine-code file>%n");
         //     System.exit(1);
         // }
+        // BufferedReader reader = new BufferedReader(new FileReader(args[0]))
+        // BufferedReader reader = new BufferedReader(new FileReader(filename))
+        
+        System.out.println();
 
-        // try (BufferedReader reader = new BufferedReader(new FileReader(args[0]))) {
-        //     String line;
-        //     // read in the entire machine-code file into memory
-        //     while ((line = reader.readLine()) != null) {
-        //         try {
-        //             state.mem[state.numMemory] = Integer.parseInt(line.trim());
-        //             System.out.printf("memory[%d]=%d%n", state.numMemory, state.mem[state.numMemory]);
-        //             state.numMemory++;
-        //         } catch (NumberFormatException e) {
-        //             System.out.printf("error in reading address %d%n", state.numMemory);
-        //             System.exit(1);
-        //         }
-        //     }
-        // } catch (IOException e) {
-        //     System.out.printf("error: can't open file %s%n", args[0]);
-        //     e.printStackTrace();
-        //     System.exit(1);
-        // }
-
-        state.numMemory = 10;
-        state.mem[0]=8454151;
-        state.mem[1]=9043971;
-        state.mem[2]=655361;
-        state.mem[3]=16842754;
-        state.mem[4]=16842749;
-        state.mem[5]=29360128;
-        state.mem[6]=25165824;
-        state.mem[7]=5;
-        state.mem[8]=-1;
-        state.mem[9]=2;
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            // read in the entire machine-code file into memory
+            while ((line = reader.readLine()) != null) {
+                try {
+                    state.mem[state.numMemory] = Integer.parseInt(line.trim());
+                    System.out.printf("memory[%d]=%d%n", state.numMemory, state.mem[state.numMemory]);
+                    state.numMemory++;
+                } catch (NumberFormatException e) {
+                    System.out.printf("error in reading address %d%n", state.numMemory);
+                    System.exit(1);
+                }
+            }
+        } catch (IOException e) {
+            System.out.printf("error: can't open file %s%n", args[0]);
+            e.printStackTrace();
+            System.exit(1);
+        }
 
         state.pc = 0;
         int rs = 0;
@@ -177,7 +183,6 @@ public class Simulator {
         
         System.out.println("final state of machine:");
         printState(state);
-
         
     }
 
