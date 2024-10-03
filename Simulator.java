@@ -40,7 +40,7 @@ public class Simulator {
         
         if(option.equals("1"))
         {
-            filename = "test.txt";
+            filename = "test.txt"; //รอการพูดคุยนัดแนะกำหนดชื่อไฟล์
         }else{
             System.out.printf("error: usage: java Simulator <machine-code file>%n");
             System.exit(1);
