@@ -22,7 +22,7 @@ public class ClassifiedType {
 
     // public static void O_Type (int[] MachineCode, int[] argument)
     // {
-        
+
     // }
 
     public static String getOp(int[] BinaryCode)

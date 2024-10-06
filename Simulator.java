@@ -1,7 +1,5 @@
+import java.io.*;
 import java.util.Scanner;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class Simulator {
     private static final int NUMMEMORY = 65536; // maximum number of words in memory
@@ -29,18 +27,53 @@ public class Simulator {
         System.out.println("end state");
     }
 
-    public static void main(String[] args) {
+    private static void printStateToFile(stateStruct state) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("output.txt", true))) {
+            writer.println("\n@@@\nstate:");
+            writer.printf("\tpc %d%n", state.pc);
+            writer.println("\tmemory:");
+            for (int i = 0; i < state.numMemory; i++) {
+                writer.printf("\t\tmem[ %d ] %d%n", i, state.mem[i]);
+            }
+            writer.println("\tregisters:");
+            for (int i = 0; i < NUMREGS; i++) {
+                writer.printf("\t\treg[ %d ] %d%n", i, state.reg[i]);
+            }
+            writer.println("end state");
+        } catch (IOException e) {
+            System.out.println("error: can't write to file output.txt");
+            e.printStackTrace();
+        }
+    }
+
+    private static void writeMemoryToFile(stateStruct state, String filename) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename, true))) {
+            for (int i = 0; i < state.numMemory; i++) {
+                writer.printf("memory[%d]=%d%n", i, state.mem[i]);
+            }
+        } catch (IOException e) {
+            System.out.println("error: can't write to file " + filename);
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
         stateStruct state = new stateStruct();
 
         Scanner scanner = new Scanner(System.in);
+        System.out.println("1.test \n2.Multiplier \n3.Combination \n4.sum");
         System.out.print("Enter your file option: ");
         String option = scanner.nextLine();
-        
         String filename = "";
-        
-        if(option.equals("1"))
-        {
-            filename = "test.txt"; //รอการพูดคุยนัดแนะกำหนดชื่อไฟล์
+
+        if(option.equals("1")) {
+            filename = "test.txt";
+        }else if(option.equals("2")){
+            filename = "Multipiler.txt";
+        }else if(option.equals("3")){
+            filename = "Combination.txt";
+        }else if(option.equals("4")){
+            filename = "sum.txt";
         }else{
             System.out.printf("error: usage: java Simulator <machine-code file>%n");
             System.exit(1);
@@ -52,7 +85,7 @@ public class Simulator {
         // }
         // BufferedReader reader = new BufferedReader(new FileReader(args[0]))
         // BufferedReader reader = new BufferedReader(new FileReader(filename))
-        
+
         System.out.println();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -73,6 +106,13 @@ public class Simulator {
             e.printStackTrace();
             System.exit(1);
         }
+        try (PrintWriter writer = new PrintWriter(new FileWriter("output.txt"))) {
+            // This will clear output before using new one
+        } catch (IOException e) {
+            System.out.println("error: can't clear file " + "output.txt");
+            e.printStackTrace();
+        }
+        writeMemoryToFile(state,"output.txt");//write to output file
 
         state.pc = 0;
         int rs = 0;
@@ -82,7 +122,7 @@ public class Simulator {
         int total = 0;
         int i = 1;
         while(i != -1){
-            
+
             try {
                 handleStateUpdate(state);
             } catch (PCOutOfBoundsException e) {
@@ -90,33 +130,33 @@ public class Simulator {
             }
 
             printState(state);
-
+            printStateToFile(state);
             int next_pc = state.pc + 1;
 
             int[] BinaryMachineCode = BinaryConvert.ConvertToBinary(state.mem[state.pc]);
-            
-            String opcode = ClassifiedType.getOp(BinaryMachineCode);
-            
 
-            
+            String opcode = ClassifiedType.getOp(BinaryMachineCode);
+
+
+
             switch (opcode.toString()) {
-                case "000":
-                    ClassifiedType.R_Type(BinaryMachineCode, argu); 
+                case "000": //add
+                    ClassifiedType.R_Type(BinaryMachineCode, argu);
                     rs = state.reg[argu[0]];
                     rt = state.reg[argu[1]];
                     state.reg[argu[2]] = rs + rt;
                     state.pc++;
                     break;
-                
-                case "001":
+
+                case "001": //nand
                     ClassifiedType.R_Type(BinaryMachineCode, argu);
                     rs = state.reg[argu[0]];
                     rt = state.reg[argu[1]];
                     state.reg[argu[2]] = ~(rs & rt);
                     state.pc++;
                     break;
-                
-                case "010":
+
+                case "010"://lw
                     ClassifiedType.I_Type(BinaryMachineCode, argu);
                     rs = state.reg[argu[0]];
                     offset = convertNum(argu[2]);
@@ -124,7 +164,7 @@ public class Simulator {
                     state.pc++;
                     break;
 
-                case "011":
+                case "011"://sw
                     ClassifiedType.I_Type(BinaryMachineCode, argu);
                     rs = state.reg[argu[0]];
                     offset = convertNum(argu[2]);
@@ -132,7 +172,7 @@ public class Simulator {
                     state.pc++;
                     break;
 
-                case "100":
+                case "100"://beq
                     ClassifiedType.I_Type(BinaryMachineCode, argu);
                     rs = state.reg[argu[0]];
                     rt = state.reg[argu[1]];
@@ -146,44 +186,64 @@ public class Simulator {
                     }
                     break;
 
-                case "101":
+                case "101"://jalr
                     ClassifiedType.J_Type(BinaryMachineCode, argu);
                     state.reg[argu[1]] = next_pc;
                     state.pc = state.reg[argu[0]];
                     break;
 
-                case "110":
+                case "110"://halt
                     i = -1;
                     state.pc++;
                     break;
 
-                case "111":
+                case "111"://noop
                     break;
-                
+
             }
-            
+
             if(i != -1){
                 total++;
             }else{
                 total++;
+                try (PrintWriter writer = new PrintWriter(new FileWriter("output.txt", true))){
+                    writer.println("machine halted");
+                    writer.println("total of "+ total + " instructions executed");
+                }catch (IOException e) {
+                    System.out.println("error: can't write to file " + "output.txt");
+                    e.printStackTrace();
+                }
                 System.out.println("machine halted");
                 System.out.println("total of " + total + " instructions executed");
             }
-            
-            
+
+
             if(total > MAXLINELENGTH)
             {
                 i = -1;
+                try (PrintWriter writer = new PrintWriter(new FileWriter("output.txt", true))){
+                    writer.println("machine halted");
+                    writer.println("total of "+ total + " instructions executed");
+                }catch (IOException e) {
+                    System.out.println("error: can't write to file " + "output.txt");
+                    e.printStackTrace();
+                }
                 System.out.println("machine out of line");
                 System.out.println("total of " + total + " instructions executed");
             }
 
         }
-        
-        
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter("output.txt", true))){
+            writer.println("final state of machine:");
+        }catch (IOException e) {
+            System.out.println("error: can't write to file " + "output.txt");
+            e.printStackTrace();
+        }
         System.out.println("final state of machine:");
         printState(state);
-        
+        printStateToFile(state);
+
     }
 
     public static int convertNum(int num) {
@@ -199,5 +259,6 @@ public class Simulator {
             throw new PCOutOfBoundsException("Program counter is less than 0");
         }
     }
-    
+
 }
+
