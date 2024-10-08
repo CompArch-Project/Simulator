@@ -69,7 +69,7 @@ public class Simulator {
         if(option.equals("1")) {
             filename = "test.txt";
         }else if(option.equals("2")){
-            filename = "Multipiler.txt";
+            filename = "Multiplier.txt";
         }else if(option.equals("3")){
             filename = "Combination.txt";
         }else if(option.equals("4")){
@@ -102,7 +102,7 @@ public class Simulator {
                 }
             }
         } catch (IOException e) {
-            System.out.printf("error: can't open file %s%n", args[0]);
+            System.out.printf("error: can't open file %s%n", filename);
             e.printStackTrace();
             System.exit(1);
         }
@@ -218,7 +218,7 @@ public class Simulator {
             }
 
 
-            if(total > MAXLINELENGTH)
+            if(total + 1 > MAXLINELENGTH)
             {
                 i = -1;
                 try (PrintWriter writer = new PrintWriter(new FileWriter("output.txt", true))){
