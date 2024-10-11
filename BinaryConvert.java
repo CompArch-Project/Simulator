@@ -1,9 +1,12 @@
 public class BinaryConvert {
-
-    // เป็นฟังก์ชันที่นำเข้า Decimal Machine Code ที่เป็น int แล้วแปลงค่าเป็น Binary ที่เก็บค่าเป็น array integer 32 บิต
+    /**
+      * ใช้ฟังก์ชันนี้ในการแปลงเลข decimal number ให้เป็นเลข Binary
+      * @param x ที่เป็น Decimal Number
+      * @return Array Interger ของ Binary Machine Code 32 bit
+      */
     public static int[] ConvertToBinary(int x){ 
         
-        int[] binaryArray = new int[32];  // สร้าง array int ที่เก็บได้ 32 บิต
+        int[] binaryArray = new int[32];  
 
         // ทำการเช็คว่าค่าที่รับมาเป็น positive หรือไม่ เพราะต้องการให้ฟังก์ขันนี้สามารถ handle 2's complement
         if (x >= 0) {
@@ -26,8 +29,11 @@ public class BinaryConvert {
         return binaryArray;
 
     }
-
-    //รับ string ที่อยู่ในรูปแบบเลข binary แล้วแปลงเป็น decimal integer 
+    /**
+      * ใช้ฟังก์ชันนี้ในการแปลง 2's complement binary เป็น decimal
+      * @param binary ที่เป็น String 2's complement Binary number
+      * @return interger ของ decimal number
+      */
     public static int convertTwoComplementToDecimal(String binary) { 
         int length = binary.length();
 

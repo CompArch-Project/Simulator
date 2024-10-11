@@ -79,13 +79,6 @@ public class Simulator {
             System.exit(1);
         }
 
-        // if (args.length != 1) {
-        //     System.out.printf("error: usage: java Simulator <machine-code file>%n");
-        //     System.exit(1);
-        // }
-        // BufferedReader reader = new BufferedReader(new FileReader(args[0]))
-        // BufferedReader reader = new BufferedReader(new FileReader(filename))
-
         System.out.println();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -133,13 +126,13 @@ public class Simulator {
 
             printState(state); //print state ก่อนที่จะคำนวณ instruction
             printStateToFile(state); //เขียนการ print state ในไฟล์ใหม่ .txt
-
-            int next_pc = state.pc + 1; //initialize ตัวแปรที่เก็บค่า PC+1 ชื่อ next_pc
-
-            int[] BinaryMachineCode = BinaryConvert.ConvertToBinary(state.mem[state.pc]); //แปลงค่า Decimal MachineCode ให้เป็น Binary MachineCode แล้วเก็บใน array integer 
-
-            String opcode = ClassifiedType.getOp(BinaryMachineCode); //ดึง opcode จาก MachineCode ผ่านฟังก์ชันที่อยู่ใน class ClassifiedType
-
+            
+            //initialize ตัวแปรที่เก็บค่า PC+1 ชื่อ next_pc
+            int next_pc = state.pc + 1; 
+            //แปลงค่า Decimal MachineCode ให้เป็น Binary MachineCode แล้วเก็บใน array integer 
+            int[] BinaryMachineCode = BinaryConvert.ConvertToBinary(state.mem[state.pc]); 
+            //ดึง opcode จาก MachineCode ผ่านฟังก์ชันที่อยู่ใน class ClassifiedType
+            String opcode = ClassifiedType.getOp(BinaryMachineCode); 
 
             // เช็คเคสของ opcode ที่ดึงมาได้
             switch (opcode.toString()) {
@@ -255,7 +248,11 @@ public class Simulator {
 
     }
 
-    //เป็นฟังกชันที่ extend บิตของ offsetField
+    /**
+      * ใช้ฟังก์ชันนี้ในการขยายบิตของ offset 
+      * @param num ที่เป็น OffsetField 16 bit
+      * @return interger ของ OffsetField ที่ขยายเป็น 32 bit
+      */
     public static int convertNum(int num) {
         if ((num & (1 << 15)) != 0) {
             num -= (1 << 16);
@@ -263,7 +260,10 @@ public class Simulator {
         return num;
     }
 
-    //เป็นฟังกชันที่ถูกเรียกเพื่อเช็คว่า pc state มีการเปลี่ยนแปลงจนน้อยกว่า 0 หรือไม่ โดยเช็คทุกตอนเริ่ม while loop เสมอ
+    /**
+      * ใช้ฟังก์ชันนี้ในการเช็ค exception ของการที่ pc < 0
+      * @param state ณ ปัจจุบันของโปรแกรม
+      */
     public static void handleStateUpdate(stateStruct state) {
         //หาก pc < 0 จริง
         if (state.pc < 0) {
